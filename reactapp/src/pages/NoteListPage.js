@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-
+import ListItem from '../compoents/ListItem';
 
 const NoteListPage = () => {
     const [notes, setNotes] = useState([]);
 
     useEffect (() => {
-        axios.get('http://127.0.0.1:8000/api/getnotes/')
+        axios.get('http://127.0.0.1:8000/api/notes/')
         .then(Response => {
             setNotes(Response.data)
         })
@@ -16,10 +16,12 @@ const NoteListPage = () => {
     }, [])
   return (
     <div>
-      <ul>
-        {notes.map(notes => (
-            <li key={notes.id}>{notes.body}</li>
-        ) )}
+       <ul>
+        {notes.map((note) => (
+          <li key={note.id}>
+            <ListItem note={note} />
+          </li>
+        ))}
       </ul>
    
     </div>
