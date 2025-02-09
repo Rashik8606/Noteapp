@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const NotePage = () => {
   let { id } = useParams();
@@ -31,11 +31,17 @@ const NotePage = () => {
   }, [id]);
 
   return (
-    <div>
+    <div className='note'>
+      <div>
+        <Link to={"/"}>
+          <h2> Back </h2>
+        </Link>
+      </div>
+      
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : note ? (
-        <p>{note.body}</p>
+        <textarea defaultValue={note?.body}></textarea>
       ) : (
         <p>Loading...</p>
       )}

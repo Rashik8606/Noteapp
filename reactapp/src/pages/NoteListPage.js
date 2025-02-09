@@ -15,12 +15,16 @@ const NoteListPage = () => {
         })
     }, [])
   return (
-    <div>
+    <div className='notes'>
+      <div className='notes-header'>
+        <h2 className='notes-title'>&#9782; Notes</h2>
+        <p className='notes-count'>{notes.length}</p>
+      </div>
        <ul>
         {notes.map((note) => (
-          <li key={note.id}>
+          <p key={note.id}>
             <ListItem note={note} />
-          </li>
+          </p>
         ))}
       </ul>
    
