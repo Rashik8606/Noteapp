@@ -5,6 +5,7 @@ const NotePage = () => {
   let { id } = useParams();
   let [note, setNote] = useState(null);
   let [error, setError] = useState(null);
+  let [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     let getNote = async () => {
@@ -30,18 +31,51 @@ const NotePage = () => {
     getNote();
   }, [id]);
 
+  let updateNote = async () => {
+    setIsSaving(true);
+    try {
+      let response = await fetch(`http://127.0.0.1:8000/api/note/${id}/update`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(note),
+      });
+      if (!response.ok) {
+        console.error(`Failed to update note: ${response.status}`);
+      } else {
+        console.log("Note updated successfully!");
+      }
+    } catch (err) {
+      console.error("Error updating the note:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+
+  
+
   return (
-    <div className='note'>
+    <div className="note">
       <div>
         <Link to={"/"}>
           <h2> Back </h2>
         </Link>
       </div>
-      
+
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : note ? (
-        <textarea defaultValue={note?.body}></textarea>
+        <>
+          <textarea
+            value={note?.body || ''}
+            onChange={(e) => setNote({ ...note, body: e.target.value })}
+          ></textarea>
+          <button onClick={updateNote} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save"}
+          </button>
+        </>
       ) : (
         <p>Loading...</p>
       )}
