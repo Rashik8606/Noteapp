@@ -6,6 +6,7 @@ const NotePage = () => {
   let [note, setNote] = useState(null);
   let [error, setError] = useState(null);
   let [isSaving, setIsSaving] = useState(false);
+  
 
   useEffect(() => {
     let getNote = async () => {
@@ -53,7 +54,14 @@ const NotePage = () => {
     }
   };
 
-
+  let deleteNote = async ()=> {
+    fetch(`http://127.0.0.1:8000/api/note/${id}/delete`,{
+      method:'DELETE',
+      'headers':{
+        'Content-Type':'application/json'
+      }
+    })
+  }
   
 
   return (
@@ -75,6 +83,7 @@ const NotePage = () => {
           <button onClick={updateNote} disabled={isSaving}>
             {isSaving ? "Saving..." : "Save"}
           </button>
+          <button onClick={deleteNote}>Delete</button>
         </>
       ) : (
         <p>Loading...</p>
