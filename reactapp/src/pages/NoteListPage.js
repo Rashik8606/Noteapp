@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import ListItem from '../compoents/ListItem';
+import AddButton from './AddButton';
 
 const NoteListPage = () => {
     const [notes, setNotes] = useState([]);
@@ -27,7 +28,7 @@ const NoteListPage = () => {
           </p>
         ))}
       </ul>
-   
+        <AddButton/>
     </div>
   )
 }
