@@ -10,7 +10,6 @@ import Header from './compoents/Header';
 import NoteListPage from './pages/NoteListPage';
 import NotePage from "./pages/NotePage";
 
-
 function App() {
   return (
     <Router>

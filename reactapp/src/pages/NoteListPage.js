@@ -15,6 +15,10 @@ const NoteListPage = () => {
             console.error("Error Fetch data", error)
         })
     }, [])
+     const getSummary = (body)=> {
+      return body.length > 20 ? `${body.slice(0, 50)}...` : body;
+     }
+
   return (
     <div className='notes'>
       <div className='notes-header'>
@@ -24,11 +28,11 @@ const NoteListPage = () => {
        <ul>
         {notes.map((note) => (
           <p key={note.id}>
-            <ListItem note={note} />
+            <ListItem note={{ ...note, body: getSummary(note.body) }} />
           </p>
         ))}
       </ul>
-        <AddButton/>
+        <AddButton />
     </div>
   )
 }

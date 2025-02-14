@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const NotePage = () => {
   let { id } = useParams();
-  let [note, setNote] = useState(null);
+  let navigate = useNavigate();
+  let [note, setNote] = useState({ body: '' }); // Initialize note with an empty body
   let [error, setError] = useState(null);
   let [isSaving, setIsSaving] = useState(false);
-  
 
   useEffect(() => {
-    let getNote = async () => {
+    if (id === 'new') return; 
+    const getNote = async () => {
       try {
         console.log(`Fetching note from: http://127.0.0.1:8000/api/note/${id}/`);
         let response = await fetch(`http://127.0.0.1:8000/api/note/${id}/`);
@@ -32,7 +33,8 @@ const NotePage = () => {
     getNote();
   }, [id]);
 
-  let updateNote = async () => {
+  const updateNote = async () => {
+    if (id === 'new') return;
     setIsSaving(true);
     try {
       let response = await fetch(`http://127.0.0.1:8000/api/note/${id}/update`, {
@@ -54,40 +56,75 @@ const NotePage = () => {
     }
   };
 
-  let deleteNote = async ()=> {
-    fetch(`http://127.0.0.1:8000/api/note/${id}/delete`,{
-      method:'DELETE',
-      'headers':{
-        'Content-Type':'application/json'
+  const deleteNote = async () => {
+    try {
+      let response = await fetch(`http://127.0.0.1:8000/api/note/${id}/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        console.log("Note deleted successfully!");
+        navigate('/'); 
+      } else {
+        console.error(`Failed to delete note: ${response.status}`);
       }
-    })
+    } catch (err) {
+      console.error("Error deleting the note:", err);
+    }
+  };
+  const createNote = async () => {
+    if (!note.body.trim()){
+      alert('Cannot Save an empty note !')
+      return;
+    }
+    try {
+      let response = await fetch (`http://127.0.0.1:8000/api/note/create`,{
+        method : 'POST',
+        headers :{
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(note),
+      })
+      if (response.ok){
+        console.log('Note created Successfully')
+        navigate('/')
+      } else {
+        console.error('Falied to create note !')
+      }
+    }catch (err){
+      console.log('error creating the note :',err)
+    }
+  };
+  const handleSaveAndExit = () => {
+    if (id !== 'new'){
+      updateNote()
+    } else {
+      createNote()
+    }
+    navigate('/')
   }
-  
 
   return (
     <div className="note">
-      <div>
-        <Link to={"/"}>
-          <h2> Back </h2>
-        </Link>
+      <div className="note-header">
+           <h3>
+            <Link to={'/'} onClick={updateNote}>Back</Link>
+           </h3>
+           {id !== 'new' ? (
+             <button onClick={deleteNote}>Delete</button>
+           ) : (
+            <button onClick={createNote}>Done</button>
+           )
+          }
+          
       </div>
-
-      {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ) : note ? (
-        <>
-          <textarea
-            value={note?.body || ''}
+      <textarea
+            value={note.body}
             onChange={(e) => setNote({ ...note, body: e.target.value })}
-          ></textarea>
-          <button onClick={updateNote} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save"}
-          </button>
-          <button onClick={deleteNote}>Delete</button>
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
+          ></textarea>    
+          
     </div>
   );
 };
