@@ -18,6 +18,7 @@ const NoteListPage = () => {
      const getSummary = (body)=> {
       return body.length > 20 ? `${body.slice(0, 50)}...` : body;
      }
+     
 
   return (
     <div className='notes'>

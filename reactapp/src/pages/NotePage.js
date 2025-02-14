@@ -4,12 +4,12 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 const NotePage = () => {
   let { id } = useParams();
   let navigate = useNavigate();
-  let [note, setNote] = useState({ body: '' }); // Initialize note with an empty body
+  let [note, setNote] = useState({ body: '' });
   let [error, setError] = useState(null);
-  let [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (id === 'new') return; 
+    if (id === 'new') return;
+
     const getNote = async () => {
       try {
         console.log(`Fetching note from: http://127.0.0.1:8000/api/note/${id}/`);
@@ -25,8 +25,8 @@ const NotePage = () => {
         let data = await response.json();
         setNote(data);
       } catch (err) {
-        console.error("Error fetching the note:", err);
-        setError("An unexpected error occurred while fetching the note.");
+        console.error('Error fetching the note:', err);
+        setError('An unexpected error occurred while fetching the note.');
       }
     };
 
@@ -34,11 +34,9 @@ const NotePage = () => {
   }, [id]);
 
   const updateNote = async () => {
-    if (id === 'new') return;
-    setIsSaving(true);
     try {
       let response = await fetch(`http://127.0.0.1:8000/api/note/${id}/update`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -46,13 +44,9 @@ const NotePage = () => {
       });
       if (!response.ok) {
         console.error(`Failed to update note: ${response.status}`);
-      } else {
-        console.log("Note updated successfully!");
       }
     } catch (err) {
-      console.error("Error updating the note:", err);
-    } finally {
-      setIsSaving(false);
+      console.error('Error updating the note:', err);
     }
   };
 
@@ -65,66 +59,66 @@ const NotePage = () => {
         },
       });
       if (response.ok) {
-        console.log("Note deleted successfully!");
-        navigate('/'); 
+        navigate('/');
       } else {
         console.error(`Failed to delete note: ${response.status}`);
       }
     } catch (err) {
-      console.error("Error deleting the note:", err);
+      console.error('Error deleting the note:', err);
     }
   };
+
   const createNote = async () => {
-    if (!note.body.trim()){
-      alert('Cannot Save an empty note !')
+    if (!note.body.trim()) {
+      alert('Cannot save an empty note!');
       return;
     }
     try {
-      let response = await fetch (`http://127.0.0.1:8000/api/note/create`,{
-        method : 'POST',
-        headers :{
+      let response = await fetch('http://127.0.0.1:8000/api/note/create', {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
         },
-        body:JSON.stringify(note),
-      })
-      if (response.ok){
-        console.log('Note created Successfully')
-        navigate('/')
+        body: JSON.stringify(note),
+      });
+      if (response.ok) {
+        navigate('/');
       } else {
-        console.error('Falied to create note !')
+        console.error('Failed to create note!');
       }
-    }catch (err){
-      console.log('error creating the note :',err)
+    } catch (err) {
+      console.error('Error creating the note:', err);
     }
   };
-  const handleSaveAndExit = () => {
-    if (id !== 'new'){
-      updateNote()
+
+  const handleSaveAndExit = async () => {
+    if (id === 'new') {
+      await createNote();
     } else {
-      createNote()
+      await updateNote();
     }
-    navigate('/')
-  }
+    navigate('/');
+  };
 
   return (
     <div className="note">
       <div className="note-header">
-           <h3>
-            <Link to={'/'} onClick={updateNote}>Back</Link>
-           </h3>
-           {id !== 'new' ? (
-             <button onClick={deleteNote}>Delete</button>
-           ) : (
-            <button onClick={createNote}>Done</button>
-           )
-          }
-          
+        <h3>
+          <Link to="/" onClick={handleSaveAndExit}>
+            Back
+          </Link>
+        </h3>
+        {id !== 'new' ? (
+          <button onClick={deleteNote}>Delete</button>
+        ) : (
+          <button onClick={handleSaveAndExit}>Done</button>
+        )}
       </div>
+      {error && <p className="error-message">{error}</p>}
       <textarea
-            value={note.body}
-            onChange={(e) => setNote({ ...note, body: e.target.value })}
-          ></textarea>    
-          
+        value={note.body}
+        onChange={(e) => setNote({ ...note, body: e.target.value })}
+      ></textarea>
     </div>
   );
 };
