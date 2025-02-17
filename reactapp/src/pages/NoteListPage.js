@@ -34,6 +34,7 @@ const NoteListPage = () => {
         ))}
       </ul>
         <AddButton />
+        <h1>Git</h1>
     </div>
   )
 }
